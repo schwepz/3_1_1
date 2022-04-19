@@ -4,17 +4,13 @@ import kata.academy.Springboot.model.User;
 import kata.academy.Springboot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.*;
 
 
 @Controller
 public class UserController {
-
 
     private final UserService userService;
 
@@ -29,26 +25,36 @@ public class UserController {
         return "index";
     }
 
+    @GetMapping("/user-create")
+    public String newUser(Model model) {
+        model.addAttribute("user", new User());
+        return "user-create";
+    }
+    @PostMapping("/user-create")
+    public String createUser(@ModelAttribute("user") User user) {
+        userService.addUser(user);
+        return "redirect:/";
+    }
     @PostMapping
-    public String add(@ModelAttribute("index") User user) {
+    public String add(@ModelAttribute("user") User user) {
         userService.addUser(user);
         return "redirect:/";
     }
 
     @GetMapping("/{id}/remove")
-    public String remove(@PathVariable("id") Long id) {
+    public String remove(@PathVariable("id") long id) {
         userService.removeUserById(id);
         return "redirect:/";
     }
 
     @GetMapping("/{id}/edit")
-    public String edit(ModelMap model, @PathVariable("id") Long id) {
+    public String edit(ModelMap model, @PathVariable("id") long id) {
         model.addAttribute("user", userService.getUserById(id));
-        return "user-edit";
+        return "user-update";
     }
 
     @PostMapping("/{id}")
-    public String update(@ModelAttribute("user") User user, @PathVariable("id") Long id) {
+    public String update(@ModelAttribute("user") User user,  @PathVariable("id") long id) {
         userService.updateUser(user);
         return "redirect:/";
     }
